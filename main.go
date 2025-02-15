@@ -19,7 +19,7 @@ OSStatus setDefaultOutputDeviceSampleRate(Float64 sampleRate) {
     if (status != noErr || deviceID == kAudioObjectUnknown) {
 		printf("Error getting the default output device");
         return status; // Error getting the default output device
-    }
+	}
 
     // Set the sample rate for the default output device
     address.mSelector = kAudioDevicePropertyNominalSampleRate;
@@ -35,6 +35,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -60,7 +61,8 @@ type VLCResponse struct {
 				Type            string `json:"Type"`
 			} `json:"Stream 0"`
 			Meta struct {
-				Title string `json:"title"`
+				Title  string `json:"title"`
+				Artist string `json:"artist"`
 			} `json:"meta"`
 		} `json:"category"`
 		Chapter int `json:"chapter"`
@@ -166,9 +168,10 @@ func convertStringToFloat(s string) float64 {
 }
 
 func main() {
+	runtime.GOMAXPROCS(1)
 
 	var currentSong string
-	var currentSampleRate float64 = float64(48000)
+	var currentSampleRate = float64(48000)
 	//var currentBitrate float64
 
 	for {
@@ -178,8 +181,9 @@ func main() {
 		}
 
 		if currentSong != vlc.Information.Category.Meta.Title {
+			fmt.Println("==========================================================================")
 			fmt.Println("Song Changed!")
-			fmt.Println("Song Title:", vlc.Information.Category.Meta.Title)
+			fmt.Printf("Song Title: %s - Artist: %s\n", vlc.Information.Category.Meta.Title, vlc.Information.Category.Meta.Artist)
 			currentSong = vlc.Information.Category.Meta.Title
 			newSampleRate := convertStringToFloat(vlc.Information.Category.Stream0.SampleRate)
 			if currentSampleRate != newSampleRate {
@@ -189,12 +193,13 @@ func main() {
 					fmt.Println("Error setting sample rate:", err)
 					currentSampleRate = float64(48000)
 				}
-				fmt.Println("Setting sample rate:", newSampleRate)
+				fmt.Printf("Setting sample rate: %.0f Hz\n", newSampleRate)
 			} else {
 				fmt.Println("Sample rate not changed!")
 			}
+			fmt.Println("==========================================================================")
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 
 }
