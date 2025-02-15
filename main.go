@@ -195,7 +195,7 @@ func main() {
 				}
 				fmt.Printf("Setting sample rate: %.0f Hz\n", newSampleRate)
 			} else {
-				fmt.Println("Sample rate not changed!")
+				fmt.Println("Sample rate stayed the same")
 			}
 			fmt.Println("==========================================================================")
 		}
