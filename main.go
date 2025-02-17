@@ -93,7 +93,7 @@ func convertStringToFloat(s string) float64 {
 		}
 		return sampleRate
 	} else {
-		fmt.Println("Error converting sample rate to float:", s)
+		fmt.Println("Error getting sample rate data:", s)
 		return float64(48000)
 	}
 
